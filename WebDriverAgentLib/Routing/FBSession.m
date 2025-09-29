@@ -51,6 +51,16 @@ NSString *const FB_SAFARI_BUNDLE_ID = @"com.apple.mobilesafari";
 
 @implementation FBSession (FBAlertsMonitorDelegate)
 
+- (BOOL)shouldHandleAlert:(FBAlert *)alert {
+    NSString *alertText = alert.text;
+    // Add your filter string here (e.g., @"Login", @"Permission Request", @"Error")
+    if ([alertText containsString:@"<FILTER_STRING>"]) {
+        // TODO: handle the filtered alert
+        return NO; // Return NO to skip handling this alert
+    }
+    return YES;
+}
+
 - (void)didDetectAlert:(FBAlert *)alert
 {
   NSString *autoClickAlertSelector = FBConfiguration.autoClickAlertSelector;
@@ -66,6 +76,10 @@ NSString *const FB_SAFARI_BUNDLE_ID = @"com.apple.mobilesafari";
        autoClickAlertSelector, e.description];
     }
     // This setting has priority over other settings if enabled
+    return;
+  }
+
+  if (![self shouldHandleAlert:alert]) {
     return;
   }
 
