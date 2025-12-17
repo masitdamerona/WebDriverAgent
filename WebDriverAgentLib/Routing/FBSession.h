@@ -92,6 +92,23 @@ extern NSString* const FB_SAFARI_BUNDLE_ID;
                                        environment:(nullable NSDictionary <NSString *, NSString *> *)environment;
 
 /**
+ Launch an application with given bundle identifier in scope of current session with custom timeout.
+ !This method is only available since Xcode9 SDK
+
+ @param bundleIdentifier Valid bundle identifier of the application to be launched
+ @param shouldWaitForQuiescence whether to wait for quiescence on application startup
+ @param arguments The optional array of application command line arguments. The arguments are going to be applied if the application was not running before.
+ @param environment The optional dictionary of environment variables for the application, which is going to be executed. The environment variables are going to be applied if the application was not running before.
+ @param timeout The timeout in seconds to wait for app launch state. If nil, uses default timeout.
+ @return The application instance
+ */
+- (XCUIApplication *)launchApplicationWithBundleId:(NSString *)bundleIdentifier
+                           shouldWaitForQuiescence:(nullable NSNumber *)shouldWaitForQuiescence
+                                         arguments:(nullable NSArray<NSString *> *)arguments
+                                       environment:(nullable NSDictionary <NSString *, NSString *> *)environment
+                                           timeout:(nullable NSNumber *)timeout;
+
+/**
  Activate an application with given bundle identifier in scope of current session.
  !This method is only available since Xcode9 SDK
 

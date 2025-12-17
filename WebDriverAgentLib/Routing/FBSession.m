@@ -254,6 +254,19 @@ static FBSession *_activeSession = nil;
                                          arguments:(nullable NSArray<NSString *> *)arguments
                                        environment:(nullable NSDictionary <NSString *, NSString *> *)environment
 {
+  return [self launchApplicationWithBundleId:bundleIdentifier
+                     shouldWaitForQuiescence:shouldWaitForQuiescence
+                                   arguments:arguments
+                                 environment:environment
+                                     timeout:nil];
+}
+
+- (XCUIApplication *)launchApplicationWithBundleId:(NSString *)bundleIdentifier
+                           shouldWaitForQuiescence:(nullable NSNumber *)shouldWaitForQuiescence
+                                         arguments:(nullable NSArray<NSString *> *)arguments
+                                       environment:(nullable NSDictionary <NSString *, NSString *> *)environment
+                                           timeout:(nullable NSNumber *)timeout
+{
   XCUIApplication *app = [self makeApplicationWithBundleId:bundleIdentifier];
   if (nil == shouldWaitForQuiescence) {
     // Iherit the quiescence check setting from the main app under test by default
@@ -264,7 +277,18 @@ static FBSession *_activeSession = nil;
   if (!app.running) {
     app.launchArguments = arguments ?: @[];
     app.launchEnvironment = environment ?: @{};
-    [app launch];
+
+    NSTimeInterval defaultTimeout = _XCTApplicationStateTimeout();
+    if (nil != timeout) {
+      _XCTSetApplicationStateTimeout([timeout doubleValue]);
+    }
+    @try {
+      [app launch];
+    } @finally {
+      if (nil != timeout) {
+        _XCTSetApplicationStateTimeout(defaultTimeout);
+      }
+    }
   } else {
     [app activate];
   }
